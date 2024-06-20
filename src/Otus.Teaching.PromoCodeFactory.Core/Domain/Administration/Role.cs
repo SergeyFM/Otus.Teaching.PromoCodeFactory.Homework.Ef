@@ -1,12 +1,9 @@
-﻿using System;
+﻿namespace Otus.Teaching.PromoCodeFactory.Core.Domain.Administration;
+#nullable disable
 
-namespace Otus.Teaching.PromoCodeFactory.Core.Domain.Administration
-{
-    public class Role
-        : BaseEntity
-    {
-        public string Name { get; set; }
+public class Role
+    : BaseEntity {
+    public string Name { get; set; }
 
-        public string Description { get; set; }
-    }
+    public string Description { get; set; }
 }

@@ -1,10 +1,7 @@
-﻿using System;
+﻿namespace Otus.Teaching.PromoCodeFactory.Core.Domain.PromoCodeManagement;
+#nullable disable
 
-namespace Otus.Teaching.PromoCodeFactory.Core.Domain.PromoCodeManagement
-{
-    public class Preference
-        :BaseEntity
-    {
-        public string Name { get; set; }
-    }
+public class Preference
+    : BaseEntity {
+    public string Name { get; set; }
 }
