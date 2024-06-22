@@ -1,5 +1,5 @@
 ﻿namespace Otus.Teaching.PromoCodeFactory.Core.Domain.PromoCodeManagement;
-
+#nullable disable
 public class Customer
     : BaseEntity {
     public string FirstName { get; set; }
@@ -9,5 +9,6 @@ public class Customer
 
     public string Email { get; set; }
 
-    //TODO: Списки Preferences и Promocodes 
+    public ICollection<CustomerPreference> CustomerPreferences { get; set; }
+    public ICollection<PromoCode> PromoCodes { get; set; }
 }

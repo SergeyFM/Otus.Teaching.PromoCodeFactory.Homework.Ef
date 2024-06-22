@@ -10,6 +10,8 @@ public class Employee
 
     public string Email { get; set; }
 
+    public Guid RoleId { get; set; } // Foreign key
+
     public Role Role { get; set; }
 
     public int AppliedPromocodesCount { get; set; }
