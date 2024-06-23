@@ -1,7 +1,7 @@
 ﻿using Otus.Teaching.PromoCodeFactory.Core.Domain.Administration;
 
 namespace Otus.Teaching.PromoCodeFactory.Core.Domain.PromoCodeManagement;
-
+#nullable disable
 public class PromoCode
     : BaseEntity {
     public string Code { get; set; }

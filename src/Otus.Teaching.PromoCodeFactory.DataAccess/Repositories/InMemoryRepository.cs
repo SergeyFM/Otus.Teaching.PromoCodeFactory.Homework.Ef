@@ -14,4 +14,7 @@ public class InMemoryRepository<T>
     public Task<IEnumerable<T>> GetAllAsync() => Task.FromResult(Data);
 
     public Task<T> GetByIdAsync(Guid id) => Task.FromResult(Data.FirstOrDefault(x => x.Id == id));
+    public Task AddAsync(T entity) => throw new NotImplementedException();
+    public Task UpdateAsync(T entity) => throw new NotImplementedException();
+    public Task DeleteAsync(Guid id) => throw new NotImplementedException();
 }
