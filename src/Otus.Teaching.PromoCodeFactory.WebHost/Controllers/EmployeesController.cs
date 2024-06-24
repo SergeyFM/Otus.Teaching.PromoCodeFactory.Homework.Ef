@@ -40,10 +40,9 @@ public class EmployeesController
     /// <returns></returns>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<EmployeeResponse>> GetEmployeeByIdAsync(Guid id) {
-        Employee employee = await _employeeRepository.GetByIdAsync(id);
+        Employee? employee = await _employeeRepository.GetByIdAsync(id);
 
-        if (employee == null)
-            return NotFound();
+        if (employee is null) return NotFound();
 
         EmployeeResponse employeeModel = new() {
             Id = employee.Id,
