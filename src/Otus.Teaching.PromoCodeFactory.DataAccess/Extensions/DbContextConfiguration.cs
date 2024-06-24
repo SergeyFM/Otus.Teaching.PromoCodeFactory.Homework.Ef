@@ -48,19 +48,21 @@ public static class DbContextConfiguration {
         context.SaveChanges();
 
         // Seed Customer Preferences
-        foreach (Customer? customer in customers) {
-            List<CustomerPreference> customerPreferences = FakeDataFactory.Preferences
-                    .Select(p => new CustomerPreference {
-                        CustomerId = customer.Id,
-                        PreferenceId = p.Id
-                    }).ToList();
-            context.CustomerPreferences.AddRange(customerPreferences);
+        List<CustomerPreference> customerPreferences = new();
+        foreach (Customer customer in customers) {
+            foreach (Preference preference in preferences) {
+                customerPreferences.Add(new CustomerPreference {
+                    CustomerId = customer.Id,
+                    PreferenceId = preference.Id
+                });
+            }
         }
+        context.CustomerPreferences.AddRange(customerPreferences);
         context.SaveChanges();
 
         // Seed PromoCodes
         List<PromoCode> promoCodes = FakeDataFactory.PromoCodes.ToList();
-        foreach (PromoCode? promoCode in promoCodes) {
+        foreach (PromoCode promoCode in promoCodes) {
             promoCode.Preference = preferences.First(p => p.Id == promoCode.PreferenceId);
             promoCode.PartnerManager = employees.First(e => e.Id == promoCode.EmployeeId);
             promoCode.Customer = customers.First(c => c.Id == promoCode.CustomerId);
