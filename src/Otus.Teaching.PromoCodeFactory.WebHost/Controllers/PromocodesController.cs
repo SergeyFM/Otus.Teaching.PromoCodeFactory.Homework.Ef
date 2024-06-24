@@ -54,7 +54,7 @@ public class PromocodesController : ControllerBase {
     public async Task<IActionResult> GivePromoCodesToCustomersWithPreferenceAsync(GivePromoCodeRequest request) {
         IEnumerable<Preference> preferences = await _preferenceRepository.GetAllAsync();
         Preference? selectedPreference = preferences.FirstOrDefault(p => p.Name == request.Preference);
-        if (selectedPreference is null) 
+        if (selectedPreference is null)
             return BadRequest($"Предпочтение {request.Preference} не найдено.");
 
         IEnumerable<CustomerPreference> customerPreferences = await _customerPreferenceRepository.GetAllAsync();
@@ -63,7 +63,7 @@ public class PromocodesController : ControllerBase {
             .Select(cp => cp.CustomerId)
             .ToList();
 
-        if (customerIDsWithPreference.Count == 0) 
+        if (customerIDsWithPreference.Count == 0)
             return BadRequest($"Нет пользователей с предпочтением {request.Preference}.");
 
         foreach (Guid customerID in customerIDsWithPreference) {
@@ -72,7 +72,7 @@ public class PromocodesController : ControllerBase {
 
             PromoCode promoCode = new() {
                 Id = Guid.NewGuid(),
-                Code = $"{request.PromoCode}-{customerID}", 
+                Code = $"{request.PromoCode}-{customerID}",
                 BeginDate = DateTime.UtcNow,
                 EndDate = DateTime.UtcNow.AddMonths(1),
                 ServiceInfo = request.ServiceInfo,

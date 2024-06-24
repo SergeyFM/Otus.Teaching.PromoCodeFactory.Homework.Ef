@@ -19,13 +19,13 @@ public static class DbContextConfiguration {
 
         services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>)); // srazu for all types
 
-        // Recreate and seed the db
-        using (ServiceProvider serviceProvider = services.BuildServiceProvider()) {
-            using DatabaseContext context = serviceProvider.GetRequiredService<DatabaseContext>();
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
-            SeedDatabase(context);
-        }
+        /*        // Recreate and seed the db    ----> ONCE!!!
+                using (ServiceProvider serviceProvider = services.BuildServiceProvider()) {
+                    using DatabaseContext context = serviceProvider.GetRequiredService<DatabaseContext>();
+                    //context.Database.EnsureDeleted();
+                    //context.Database.EnsureCreated();
+                    SeedDatabase(context);
+                }*/
 
         return services;
     }
