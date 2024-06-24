@@ -66,7 +66,10 @@ public class DatabaseContext : DbContext {
             .IsRequired();
 
         modelBuilder.Entity<CustomerPreference>()
-            .HasKey(cp => new { cp.CustomerId, cp.PreferenceId });
+            .HasKey(cp => cp.Id);
+
+        //modelBuilder.Entity<CustomerPreference>()
+        //    .HasKey(cp => new { cp.CustomerId, cp.PreferenceId });
 
         modelBuilder.Entity<CustomerPreference>()
             .HasOne(cp => cp.Customer)

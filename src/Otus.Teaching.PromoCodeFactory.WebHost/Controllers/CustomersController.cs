@@ -13,10 +13,19 @@ namespace Otus.Teaching.PromoCodeFactory.WebHost.Controllers;
 public class CustomersController : ControllerBase {
     private readonly IRepository<Customer> _customerRepository;
     private readonly IRepository<PromoCode> _promoCodeRepository;
+    private readonly IRepository<CustomerPreference> _customerPreferenceRepository;
+    private readonly IRepository<Preference> _preferenceRepository;
 
-    public CustomersController(IRepository<Customer> customerRepository, IRepository<PromoCode> promoCodeRepository) {
+    public CustomersController(IRepository<Customer> customerRepository,
+                               IRepository<PromoCode> promoCodeRepository,
+                               IRepository<CustomerPreference> customerPreferenceRepository,
+                               IRepository<Preference> preferenceRepository
+        ) {
         _customerRepository = customerRepository;
         _promoCodeRepository = promoCodeRepository;
+        _customerPreferenceRepository = customerPreferenceRepository;
+        _preferenceRepository = preferenceRepository;
+
     }
 
     /// <summary>
@@ -43,23 +52,40 @@ public class CustomersController : ControllerBase {
         Customer? customer = await _customerRepository.GetByIdAsync(id);
         if (customer is null) return NotFound();
 
+        IEnumerable<CustomerPreference> customerPreferences = await _customerPreferenceRepository.GetAllAsync();
+        List<CustomerPreference> customerPreferencesFiltered = customerPreferences
+            .Where(cp => cp.CustomerId == customer.Id)
+            .ToList();
+
+        List<PreferenceResponse> preferences = new();
+        foreach (CustomerPreference? cp in customerPreferencesFiltered) {
+            Preference? preference = await _preferenceRepository.GetByIdAsync(cp.PreferenceId);
+            if (preference != null) {
+                preferences.Add(new PreferenceResponse {
+                    Id = preference.Id,
+                    Name = preference.Name
+                });
+            }
+        }
+
+        IEnumerable<PromoCode> promoCodes = await _promoCodeRepository.GetAllAsync();
+        List<PromoCodeResponse> customerPromoCodes = promoCodes
+            .Where(pc => pc.CustomerId == customer.Id)
+            .Select(pc => new PromoCodeResponse {
+                Id = pc.Id,
+                Code = pc.Code,
+                PartnerName = pc.PartnerName,
+                ServiceInfo = pc.ServiceInfo
+            }).ToList();
+
         CustomerResponse response = new() {
             Id = customer.Id,
             FirstName = customer.FirstName,
             LastName = customer.LastName,
             Email = customer.Email,
+            Preferences = preferences,
+            PromoCodes = customerPromoCodes
         };
-
-        response.Preferences = customer.CustomerPreferences?.Select(cp => new PreferenceResponse {
-            Id = cp.PreferenceId,
-            Name = cp.Preference.Name
-        }).ToList();
-        response.PromoCodes = customer.PromoCodes?.Select(pc => new PromoCodeResponse {
-            Id = pc.Id,
-            Code = pc.Code,
-            PartnerName = pc.PartnerName,
-            ServiceInfo = pc.ServiceInfo
-        }).ToList();
 
         return Ok(response);
     }
@@ -98,15 +124,22 @@ public class CustomersController : ControllerBase {
         customer.LastName = request.LastName;
         customer.Email = request.Email;
 
-        if (customer.CustomerPreferences is not null) {
-            customer.CustomerPreferences.Clear();
-            foreach (Guid pid in request.PreferenceIds) {
-                customer.CustomerPreferences.Add(new CustomerPreference {
-                    CustomerId = customer.Id,
-                    PreferenceId = pid
-                });
-            }
+        IEnumerable<CustomerPreference> customerPreferences = await _customerPreferenceRepository.GetAllAsync();
+        List<CustomerPreference> existingPreferences = customerPreferences
+            .Where(cp => cp.CustomerId == customer.Id)
+            .ToList();
+
+        foreach (CustomerPreference existingPreference in existingPreferences)
+            await _customerPreferenceRepository.DeleteAsync(existingPreference.Id);
+
+        foreach (Guid newPreferenceId in request.PreferenceIds) {
+            CustomerPreference newCustomerPreference = new() {
+                CustomerId = customer.Id,
+                PreferenceId = newPreferenceId
+            };
+            await _customerPreferenceRepository.AddAsync(newCustomerPreference);
         }
+
         await _customerRepository.UpdateAsync(customer);
 
         return Ok(customer.Id);

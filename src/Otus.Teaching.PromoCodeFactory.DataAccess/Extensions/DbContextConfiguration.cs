@@ -52,6 +52,7 @@ public static class DbContextConfiguration {
         foreach (Customer customer in customers) {
             foreach (Preference preference in preferences) {
                 customerPreferences.Add(new CustomerPreference {
+                    Id = Guid.NewGuid(),
                     CustomerId = customer.Id,
                     PreferenceId = preference.Id
                 });
